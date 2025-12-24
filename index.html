@@ -228,7 +228,6 @@
         .title {
             text-align: center;
             margin-bottom: 30px;
-            padding-right: 27px;
         }
 
         .title h1 {
@@ -1805,6 +1804,32 @@
                 display: none;
             }
 
+            .welcome-title {
+                padding-right: 0;
+                text-align: center;
+            }
+
+            .welcome-subtitle {
+                padding-left: 0;
+                text-align: center;
+            }
+
+            .gift-box-btn {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .gift-box {
+                margin: 0 auto;
+            }
+
+            .gift-text {
+                width: 100%;
+                text-align: center;
+            }
+
             .gift-box {
                 width: 120px;
                 height: 104px;
@@ -1939,7 +1964,6 @@
 </head>
 <body>
     <!-- Nhạc nền - Nhạc Giáng sinh -->
-    <!-- Lưu ý: Nếu nhạc trực tuyến không phát được, có thể thay thế bằng file nhạc cục bộ -->
     <audio id="bgMusic" loop preload="auto">
         <!-- Nhạc Giáng sinh miễn phí - Từ freepd.com (Public Domain) -->
         <source src="https://files.freemusicarchive.org/storage-freemusicarchive-org/music/WFMU/Dee_Yan-Key/Christmas_Songs_Remixes/Dee_Yan-Key_-_happy_christmas.mp3" type="audio/mpeg">
@@ -2364,6 +2388,7 @@
         function weightedRandom() {
             // Loại bỏ hoàn toàn khả năng trúng iPhone (Index 1)
             // Chỉ chọn ngẫu nhiên trong các phần thưởng còn lại
+            
             const others = [0, 2, 3, 4, 5, 6, 7];
             return others[Math.floor(Math.random() * others.length)];
         }
@@ -2443,7 +2468,7 @@
                 isSpinning = false;
                 spinBtn.disabled = false;
                 spinBtn.textContent = 'Rút thêm một lần nữa';
-            }, 4200);
+            }, 4000);
         }
 
         // Hiển thị popup kết quả
