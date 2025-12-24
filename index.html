@@ -2383,6 +2383,67 @@
 
         let isSpinning = false;
         let currentRotation = 0;
+        const MAX_SPINS_PER_DEVICE = 3;
+        const SPIN_COUNT_STORAGE_KEY = 'christmas_2025_spin_count_v1';
+
+        function getSpinCount() {
+            try {
+                const raw = localStorage.getItem(SPIN_COUNT_STORAGE_KEY);
+                const parsed = Number.parseInt(raw ?? '0', 10);
+                return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+            } catch {
+                return 0;
+            }
+        }
+
+        function setSpinCount(count) {
+            try {
+                localStorage.setItem(SPIN_COUNT_STORAGE_KEY, String(Math.max(0, count)));
+            } catch {
+                return;
+            }
+        }
+
+        function getRemainingSpins() {
+            return Math.max(0, MAX_SPINS_PER_DEVICE - getSpinCount());
+        }
+
+        function showSpinLimitReached() {
+            const modal = document.getElementById('resultModal');
+            const icon = document.getElementById('resultIcon');
+            const title = document.getElementById('resultTitle');
+            const text = document.getElementById('resultText');
+            if (!modal || !icon || !title || !text) return;
+
+            icon.textContent = '⛔️';
+            title.textContent = 'Bạn đã hết lượt quay';
+            text.textContent = 'Thiết bị này đã hết lượt quay.';
+            modal.classList.add('show');
+        }
+
+        function updateSpinControls() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheelCenter = document.querySelector('.wheel-center');
+            if (!spinBtn || !wheelCenter) return;
+
+            const remaining = getRemainingSpins();
+            if (remaining <= 0) {
+                spinBtn.disabled = true;
+                spinBtn.textContent = 'Hết lượt quay';
+                wheelCenter.style.pointerEvents = 'none';
+                wheelCenter.style.opacity = '0.6';
+                return;
+            }
+
+            if (!isSpinning) {
+                spinBtn.disabled = false;
+                const baseLabel = getSpinCount() === 0 ? 'Bắt đầu quay' : 'Quay thêm một lần nữa';
+                spinBtn.textContent = baseLabel;
+            }
+
+            wheelCenter.style.pointerEvents = '';
+            wheelCenter.style.opacity = '';
+        }
 
         // Chọn ngẫu nhiên theo trọng số
         function weightedRandom() {
@@ -2441,6 +2502,15 @@
         function spinWheel() {
             if (isSpinning) return;
 
+            const spinCount = getSpinCount();
+            if (spinCount >= MAX_SPINS_PER_DEVICE) {
+                showSpinLimitReached();
+                updateSpinControls();
+                return;
+            }
+
+            setSpinCount(spinCount + 1);
+
             isSpinning = true;
             const spinBtn = document.getElementById('spinBtn');
             spinBtn.disabled = true;
@@ -2465,8 +2535,7 @@
             setTimeout(() => {
                 showResult(blessings[resultIndex]);
                 isSpinning = false;
-                spinBtn.disabled = false;
-                spinBtn.textContent = 'Quay thêm một lần nữa';
+                updateSpinControls();
             }, 4000);
         }
 
@@ -2552,6 +2621,7 @@
 
         // Khởi tạo vòng quay
         drawWheel();
+        updateSpinControls();
 
         // ========== Lộ trình bay ngẫu nhiên của ông già Noel ==========
 
